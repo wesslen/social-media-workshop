@@ -20,7 +20,7 @@ library(Rfacebook)
 ## 2) Copy the long code ("Access Token") and paste it here below, substituting
 ## the fake one I wrote:
 
-fb_oauth = 'XXXXXXXYYYYYYZZZZZZ11111'
+fb_oauth = 'XXXXXXX'
 
 ## Now try running the following line:
 getUsers("me", token=fb_oauth, private_info=TRUE)
@@ -86,7 +86,7 @@ head(sort(table(users$first_name), decreasing=TRUE), n=10)
 ##################################
 
 # How can I get the text of the comments on a specific post?
-post <- getPost(page$id[1], token=fb_oauth, n.comments=1000, likes=FALSE)
+post <- getPost(post$id[1], token=fb_oauth, n.comments=1000, likes=FALSE)
 
 # This is how you can view those comments:
 comments <- post$comments
@@ -96,6 +96,6 @@ head(comments)
 # What is the comment that got the most likes?
 comments[which.max(comments$likes_count),]
 
+### searchPages function
 
-
-
+posts <- searchPages("Charlotte", token = fb_oauth , n = 200)

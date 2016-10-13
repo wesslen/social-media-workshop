@@ -68,7 +68,7 @@ searchTwitter('obama', n=1)
 library(twitteR)
 
 # profile information
-user <- getUser('barackobama')
+user <- getUser('realDonaldTrump')
 # from a Windows machine
 # user <- getUser('barackobama', cainfo = system.file("CurlSSL", "cacert.pem", package = "RCurl"))
 
@@ -211,8 +211,5 @@ getCommonHashtags(tweets$text)
 
 ## What is the most retweeted tweet?
 tweets[which.max(tweets$retweet_count),]
-
-
-
 
 
