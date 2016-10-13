@@ -9,7 +9,7 @@ output: html_document
 
 To understand how APIs work, we'll take the New York Times API as an example. This API allows users to search articles by string and dates, and returns counts of articles and a short description of each article (but not the full text). You can find the documentation [here](http://developer.nytimes.com/docs/read/article_search_api_v2). Get a new API token and paste it here:
 ```{r, eval=FALSE}
-apikey <- '4c77942b7670496cb14d9432e0c671'
+apikey <- 'xxx'
 ```
 
 The fist step is to identify the base url and the parameters that we can use to query the API. Now we can do a first API call using the `httr` package. (You can use my API key for now, let's hope we don't hit the rate limit!)
