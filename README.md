@@ -1,6 +1,10 @@
 WORKSHOP: Collecting and Analyzing Social Media Data with R
+ 
+--------------
 
-Note: [Pablo Barber&aacute;](https://github.com/pablobarbera) is the author of these materials as well as being the author of R packages:
+### Edit Note
+
+[Pablo Barber&aacute;](https://github.com/pablobarbera) is the author of these materials as well as being the creator of the R packages:
 
 *   [`streamR`](https://github.com/pablobarbera/streamR)
 
@@ -11,8 +15,8 @@ Note: [Pablo Barber&aacute;](https://github.com/pablobarbera) is the author of t
 If you're interested in learning about social media analysis, I strongly recommend starting with his materials.
 
 I (Ryan) have made only minor updates to the materials.
- 
---------------
+
+### Original Materials
 
 This github repository contains the materials and slides that I prepared for the 2-hour workshop on social media data analysis I gave as part of the Introduction to Data Science course at Georgetown University on February 2nd, 2015.
 
