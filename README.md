@@ -1,5 +1,4 @@
 WORKSHOP: Collecting and Analyzing Social Media Data with R
- 
 --------------
 
 ### Edit Note
@@ -12,7 +11,11 @@ WORKSHOP: Collecting and Analyzing Social Media Data with R
 
 *   [`instaR`](https://github.com/pablobarbera/instaR) 
 
-If you're interested in learning about social media analysis, I strongly recommend starting with his materials.
+If you're interested in learning about social media analysis, I strongly recommend starting with his materials like 
+
+*   [this tutorial on creating a follower network](https://github.com/PetGran/workshop/blob/master/code/02_analysis_twitter_nyu.R) 
+
+*   [his Twitter Ideological scaling package `tweetscores`](https://github.com/pablobarbera/twitter_ideology) that can predict Twitter user's political ideology based on their followers
 
 I (Ryan) have made only minor updates to the materials.
 

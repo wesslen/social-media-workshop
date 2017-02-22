@@ -7,10 +7,10 @@
 
 ## INSTALLING PACKAGES THAT WE WILL USE TODAY
 toInstall <- c("ROAuth", "twitteR", "streamR", "ggplot2", "stringr",
-	"tm", "RCurl", "maps", "Rfacebook", "topicmodels", "devtools")
+	"tm", "RCurl", "maps", "Rfacebook", "topicmodels", "devtools", "leaflet")
 
 # Uncomment to install the packages
-#lapply(packages, install.packages(toInstall), character.only = TRUE)
+#lapply(toInstall, install.packages(toInstall), character.only = TRUE)
 
 ## Set Working Directory, set to where you exported the Repository files
 setwd("~/Dropbox (UNC Charlotte)/social-media-workshop")
@@ -19,7 +19,7 @@ setwd("~/Dropbox (UNC Charlotte)/social-media-workshop")
 ### CREATING YOUR OWN OAUTH TOKEN ###
 #####################################
 
-## Step 1: go to apps.twitter.com and sign in
+## Step 1: go to https://apps.twitter.com and sign in
 ## Step 2: click on "Create New App"
 ## Step 3: fill name, description, and website (it can be anything, even google.com)
 ##			(make sure you leave 'Callback URL' empty)
@@ -30,8 +30,8 @@ library(ROAuth)
 requestURL <- "https://api.twitter.com/oauth/request_token"
 accessURL <- "https://api.twitter.com/oauth/access_token"
 authURL <- "https://api.twitter.com/oauth/authorize"
-consumerKey <- "xxx"
-consumerSecret <- "yyy"
+consumerKey <- "zzz"
+consumerSecret <- "xxx"
 
 my_oauth <- OAuthFactory$new(consumerKey=consumerKey,
   consumerSecret=consumerSecret, requestURL=requestURL,
@@ -67,12 +67,12 @@ searchTwitter('trump', n=5)
 ### COLLECTING USER INFORMATION   ###
 #####################################
 
-library(twitteR)
-
 # profile information
 user <- getUser('realDonaldTrump')
 # from a Windows machine
 # user <- getUser('barackobama', cainfo = system.file("CurlSSL", "cacert.pem", package = "RCurl"))
+
+# For interesting analysis on Trump's tweets, see: http://varianceexplained.org/r/trump-tweets/
 
 user$toDataFrame()
 
@@ -84,10 +84,10 @@ user$getFollowers(n=10)
 # user$getFollowers(n=10, cainfo = system.file("CurlSSL", "cacert.pem", package = "RCurl"))
 
 # friends (who they follow)
-user$getFriends(n=10)
+user$getFriends(n=43)
 
 # from a Windows machine
-# user$getFriends(n=10, cainfo = system.file("CurlSSL", "cacert.pem", package = "RCurl"))
+# user$getFriends(n=43, cainfo = system.file("CurlSSL", "cacert.pem", package = "RCurl"))
 
 #####################################
 ### SEARCH RECENT TWEETS		  ###
@@ -96,20 +96,33 @@ user$getFriends(n=10)
 # basic searches by keywords
 tweets <- searchTwitter("#beer", n=20)
 
+# convert to data frame
+tweets <- twListToDF(tweets)
+
 # wrapper to find #rstats tweets
 Rtweets(n=5)
 
 ## Search between two dates
-tweets <- searchTwitter('beer', since='2017-01-20', until='2017-02-20')
-
-# convert to data frame
-tweets <- twListToDF(tweets)
+tweets <- searchTwitter('beer', n=100, since='2017-02-18', until='2017-02-20')
 
 ## geocoded results
-searchTwitter('patriots', geocode='42.375,-71.1061111,10mi')
+tweets <- searchTwitter('beer', n = 1000, geocode='35.227085,-80.843124,10mi')
+tweets <- twListToDF(tweets)
+
+## see this Rflexdashboard of 3 months of Charlotte beer related tweets https://rpubs.com/ryanwesslen/241940
+library(leaflet)
+points <- subset(tweets, !is.na(longitude))
+
+leaflet(points) %>%
+  addTiles() %>%
+  addCircleMarkers(lng=points$longitude, lat=points$latitude,   popup = points$text, #color = pal(points$generator),
+                   stroke = FALSE, fillOpacity = 0.5, radius = 10, clusterOptions = markerClusterOptions()
+  )
 
 ## using resultType
-searchTwitter('world cup+brazil', resultType="popular", n=15)
+#  Default is mixed. Allowed values are mixed (includes popular + real time results), 
+#  recent (returns the most recent results) and popular (returns only the most popular results).
+searchTwitter('beer+wine', resultType="popular", n=15)
 searchTwitter('from:hadleywickham', resultType="recent", n=10)
 
 ## language
@@ -118,16 +131,30 @@ searchTwitter('trump', lang = "es", n=20)
 # from a Windows machine
 # tweets <- searchTwitter("obama", n=20, cainfo = system.file("CurlSSL", "cacert.pem", package = "RCurl"))
 
+# FYI a great site for Twitter statistics: http://statweestics.com/stats/hashtags/month/
+
 # but NOTE: limited to most recent ~3000 tweets in the past few days!
-tweets <- searchTwitter("#BuzzCity", n = 3200)
+tweets <- searchTwitter("ncga", n = 3000, resultType="recent")
 tweets <- twListToDF(tweets)
-tweets$created
+
+# What if you try more than ~3000?
+# "Rate limited .... blocking for a minute and retrying up to 119 times ..."
+
+# streamgraph
+library("streamgraph")
+
+# FlexDashboard on streamgraph: https://rpubs.com/ryanwesslen/242027
+source("functions.r")
+sg_hash_df <- hashtags_df(tweets)
+
+streamgraph(data = sg_hash_df, key = "hashtag", value = "value", date = "hour",
+            offset = "silhouette", interpolate = "cardinal", scale = "continuous") %>%
+  sg_legend(TRUE, "hashtag: ")
+
 
 # from a Windows machine
-# tweets <- searchTwitter("#APSA2014", cainfo = system.file("CurlSSL", "cacert.pem", package = "RCurl"))
-# tweets <- searchTwitter("#PoliSciNSF", cainfo = system.file("CurlSSL", "cacert.pem", package = "RCurl"))
+# tweets <- searchTwitter("#BuzzCity", cainfo = system.file("CurlSSL", "cacert.pem", package = "RCurl"))
 # tweets <- twListToDF(tweets)
-# tweets$created
 
 #############################################
 ### DOWNLOADING RECENT TWEETS FROM A USER ###
@@ -222,7 +249,7 @@ tweets <- parseTweets("tweets_random.json")
 getCommonHashtags(tweets$text)
 
 ## What is the most retweeted tweet?
-tweets[which.max(tweets$retweet_count),]
+top <- tweets[which.max(tweets$retweet_count),]
 
 ############################################
 ### PULL FOLLOWER INFORMATION            ###
@@ -234,7 +261,7 @@ tweets[which.max(tweets$retweet_count),]
 library(tweetscores)
 oa_folder_location <- "~/Downloads/credentials"
 
-names <- c("HeistBrewery","WoodenRobotAle")
+names <- c("LegionBrewing","WoodenRobotAle")
 
 #initialize our dataset
 beer.followers <- data.frame(
@@ -266,3 +293,20 @@ for (i in names){
   userdata$time_stamp <- format(Sys.time(), "%a %b %d %X %Y")
   beer.followers <- rbind(beer.followers, userdata)
 }
+
+
+############################################
+### Ideology Scaling based on Friends    ###
+############################################
+
+# Ideology Scaling, see https://github.com/pablobarbera/twitter_ideology
+# Somewhat out-of-date (2 years) but still fun and interesting approach
+
+# downloading friends of a user (i.e. who the user follows)
+user <- "ryan_wesslen"
+friends <- getFriends(screen_name=user, oauth_folder= oa_folder_location)
+
+# estimate ideology with MCMC method
+results <- estimateIdeology(user, friends)
+
+plot(results)

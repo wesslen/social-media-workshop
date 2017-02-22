@@ -5,7 +5,7 @@
 ## Author: Pablo Barbera, NYU, @p_barbera
 ################################################################
 
-setwd("~/Dropbox/git/social-media-workshop")
+setwd("~/Dropbox (UNC Charlotte)/social-media-workshop")
 
 # Loading the Rfacebook package
 library(Rfacebook)
@@ -20,7 +20,7 @@ library(Rfacebook)
 ## 2) Copy the long code ("Access Token") and paste it here below, substituting
 ## the fake one I wrote:
 
-fb_oauth = 'XXXXXXX'
+fb_oauth = 'xxx'
 
 ## Now try running the following line:
 getUsers("me", token=fb_oauth, private_info=TRUE)
@@ -33,13 +33,17 @@ getUsers("me", token=fb_oauth, private_info=TRUE)
 ### SCRAPING INFORMATION FROM FACEBOOK PAGES ###
 ################################################
 
+### Let's first search public pages for the term Charlotte
+library(dplyr)
+
+cltPages <- searchPages("Charlotte", token = fb_oauth , n = 500)
+cltPages <- subset(cltPages, city == "Charlotte") %>% arrange(desc(likes))
+
+
 # How can I get a list of posts from a Facebook page?
 # The following line downloads the ~100 most recent posts on the facebook
 # page of Barack Obama
-page <- getPage("barackobama", token=fb_oauth, n=100) 
-
-# What information is available for each of these posts?
-page[1,]
+page <- getPage("thecharlotteobserver", token=fb_oauth, n=500) 
 
 # Which post got more likes?
 page[which.max(page$likes_count),]
@@ -51,10 +55,9 @@ page[which.max(page$comments_count),]
 page[which.max(page$shares_count),]
 
 # We can also subset by date
-# For example, imagine we want to get all the posts from October 2012
-page <- getPage("barackobama", token=fb_oauth, n=1000,
-	since='2012/10/01', until='2012/10/30') 
-
+# For example, let's try to get all the posts from the Charlotte Observer around the Protests
+ProtPage <- getPage("thecharlotteobserver", token=fb_oauth, n=1000,
+	since='2016/09/20', until='2016/09/30') 
 
 ####################################
 ### COLLECTING PAGES' LIKES DATA ###
@@ -64,7 +67,7 @@ page <- getPage("barackobama", token=fb_oauth, n=1000,
 # The following line downloads more information about the first post
 # (note that it uses the ID of the post as main option), as well
 # as a list of 1,000 people who "liked" it
-post <- getPost(page$id[1], token=fb_oauth, n.likes=1000, comments=FALSE)
+post <- getPost(page$id[183], token=fb_oauth, n.likes=1000, comments=FALSE)
 
 # This is how you can view that list of people:
 likes <- post$likes
@@ -96,6 +99,4 @@ head(comments)
 # What is the comment that got the most likes?
 comments[which.max(comments$likes_count),]
 
-### searchPages function
 
-posts <- searchPages("Charlotte", token = fb_oauth , n = 200)
