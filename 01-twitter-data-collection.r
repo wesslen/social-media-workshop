@@ -5,15 +5,15 @@
 ## Author: Pablo Barbera, NYU, @p_barbera
 ################################################################
 
-setwd("~/Dropbox/git/social-media-workshop")
-#I just edited this
-
 ## INSTALLING PACKAGES THAT WE WILL USE TODAY
-doInstall <- TRUE  # Change to FALSE if you don't want packages installed.
 toInstall <- c("ROAuth", "twitteR", "streamR", "ggplot2", "stringr",
 	"tm", "RCurl", "maps", "Rfacebook", "topicmodels", "devtools")
 
+# Uncomment to install the packages
+#lapply(packages, install.packages(toInstall), character.only = TRUE)
 
+## Set Working Directory, set to where you exported the Repository files
+setwd("~/Dropbox (UNC Charlotte)/social-media-workshop")
 
 #####################################
 ### CREATING YOUR OWN OAUTH TOKEN ###
@@ -30,8 +30,8 @@ library(ROAuth)
 requestURL <- "https://api.twitter.com/oauth/request_token"
 accessURL <- "https://api.twitter.com/oauth/access_token"
 authURL <- "https://api.twitter.com/oauth/authorize"
-consumerKey <- "XXXXXXXXXXXX"
-consumerSecret <- "YYYYYYYYYYYYYYYYYYY"
+consumerKey <- "xxx"
+consumerSecret <- "yyy"
 
 my_oauth <- OAuthFactory$new(consumerKey=consumerKey,
   consumerSecret=consumerSecret, requestURL=requestURL,
@@ -41,7 +41,8 @@ my_oauth <- OAuthFactory$new(consumerKey=consumerKey,
 my_oauth$handshake(cainfo = system.file("CurlSSL", "cacert.pem", package = "RCurl"))
 
 ## now you can save oauth token for use in future sessions with twitteR or streamR
-save(my_oauth, file="backup/oauth_token.Rdata")
+save(my_oauth, file="./oauth_token.Rdata")
+#load("~/Downloads/credentials/oauth_token.Rdata")
 
 ### NOTE (added February 17, 2015)
 ### The twitteR package just changed its authentication method
@@ -49,14 +50,15 @@ save(my_oauth, file="backup/oauth_token.Rdata")
 ### New code to authenticate with twitteR now requires access token and access secret,
 ### which can be found in 'Keys and Access Tokens' tab in apps.twitter.com
 
-accessToken = 'ZZZZZZZZZZZZZZ'
-accessSecret = 'AAAAAAAAAAAAAAAAAA'
+accessToken = 'zzz'
+accessSecret = 'xxx'
 
-## testing that it works
 library(twitteR)
 setup_twitter_oauth(consumer_key=consumerKey, consumer_secret=consumerSecret,
 	access_token=accessToken, access_secret=accessSecret)
-searchTwitter('obama', n=1)
+
+## testing that it works
+searchTwitter('trump', n=5)
 
 ## from a Windows machine:
 # searchTwitter("obama", cainfo = system.file("CurlSSL", "cacert.pem", package = "RCurl"))
@@ -87,25 +89,37 @@ user$getFriends(n=10)
 # from a Windows machine
 # user$getFriends(n=10, cainfo = system.file("CurlSSL", "cacert.pem", package = "RCurl"))
 
-# see also smappR package (https://github.com/SMAPPNYU/smappR) for additional
-# functions to download users' data for a large number of users
-
 #####################################
 ### SEARCH RECENT TWEETS		  ###
 #####################################
 
 # basic searches by keywords
-tweets <- searchTwitter("obama", n=20)
+tweets <- searchTwitter("#beer", n=20)
 
-# from a Windows machine
-# tweets <- searchTwitter("obama", n=20, cainfo = system.file("CurlSSL", "cacert.pem", package = "RCurl"))
+# wrapper to find #rstats tweets
+Rtweets(n=5)
+
+## Search between two dates
+tweets <- searchTwitter('beer', since='2017-01-20', until='2017-02-20')
 
 # convert to data frame
 tweets <- twListToDF(tweets)
 
+## geocoded results
+searchTwitter('patriots', geocode='42.375,-71.1061111,10mi')
+
+## using resultType
+searchTwitter('world cup+brazil', resultType="popular", n=15)
+searchTwitter('from:hadleywickham', resultType="recent", n=10)
+
+## language
+searchTwitter('trump', lang = "es", n=20)
+
+# from a Windows machine
+# tweets <- searchTwitter("obama", n=20, cainfo = system.file("CurlSSL", "cacert.pem", package = "RCurl"))
+
 # but NOTE: limited to most recent ~3000 tweets in the past few days!
-tweets <- searchTwitter("#APSA2014")
-tweets <- searchTwitter("#PoliSciNSF")
+tweets <- searchTwitter("#BuzzCity", n = 3200)
 tweets <- twListToDF(tweets)
 tweets$created
 
@@ -120,13 +134,13 @@ tweets$created
 #############################################
 
 ## Here's how you can capture the most recent tweets (up to 3,200)
-## of any given user (in this case, @nytimes)
+## of any given user (in this case, @realDonaldTrump)
 
 ## you can do this with twitteR
-timeline <- userTimeline('nytimes', n=20)
+timeline <- userTimeline('realDonaldTrump', n=3200)
 
 # from a Windows machine
-# timeline <- userTimeline('nytimes', n=20, cainfo = system.file("CurlSSL", "cacert.pem", package = "RCurl"))
+# timeline <- userTimeline('realDonaldTrump', n=20, cainfo = system.file("CurlSSL", "cacert.pem", package = "RCurl"))
 
 timeline <- twListToDF(timeline)
 
@@ -141,10 +155,8 @@ getTimeline(filename="tweets_nytimes.json", screen_name="nytimes",
 library(streamR)
 tweets <- parseTweets("tweets_nytimes.json")
 
-# see again smappR package (https://github.com/SMAPPNYU/smappR) for more
-
 ###############################################
-### COLLECTING TWEETS FILTERING BY KEYWORDS ###
+### STREAMING TWEETS FILTERING BY KEYWORDS  ###
 ###############################################
 
 library(streamR)
@@ -212,4 +224,45 @@ getCommonHashtags(tweets$text)
 ## What is the most retweeted tweet?
 tweets[which.max(tweets$retweet_count),]
 
+############################################
+### PULL FOLLOWER INFORMATION            ###
+############################################
 
+# See post: https://wesslen.github.io/twitter/twitter-get-followers/
+
+#devtools::install_github("pablobarbera/twitter_ideology/pkg/tweetscores")
+library(tweetscores)
+oa_folder_location <- "~/Downloads/credentials"
+
+names <- c("HeistBrewery","WoodenRobotAle")
+
+#initialize our dataset
+beer.followers <- data.frame(
+  id_str=character(),
+  screen_name=character(),
+  name=character(),
+  description=character(),
+  followers_count=integer(),
+  statuses_count=integer(),
+  friends_count=integer(),
+  created_at=character(),
+  location=character()
+)
+
+for (i in names){
+  print(i)
+  
+  # get followers
+  followers <- getFollowers(screen_name = names[1],
+                            oauth_folder= oa_folder_location,
+                            cursor = -1, user_id = NULL, verbose = TRUE, sleep = 1)
+  
+  # Batch mode - get User ID info (ID, name, description, etc)
+  userdata <- getUsersBatch(ids=followers,
+                            oauth_folder= oa_folder_location)
+  
+  # Id and timestamp lists
+  userdata$brewery <- i
+  userdata$time_stamp <- format(Sys.time(), "%a %b %d %X %Y")
+  beer.followers <- rbind(beer.followers, userdata)
+}
