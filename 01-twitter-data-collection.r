@@ -30,8 +30,8 @@ library(ROAuth)
 requestURL <- "https://api.twitter.com/oauth/request_token"
 accessURL <- "https://api.twitter.com/oauth/access_token"
 authURL <- "https://api.twitter.com/oauth/authorize"
-consumerKey <- "zzz"
-consumerSecret <- "xxx"
+consumerKey <- "usbKthI1JZ4wlFNABSSS0eEbY"
+consumerSecret <- "8q5OCujj2BMReW8PL1aR3DuTYDXb05XlpnZGx8goX30ACfaYjm"
 
 my_oauth <- OAuthFactory$new(consumerKey=consumerKey,
   consumerSecret=consumerSecret, requestURL=requestURL,
@@ -50,8 +50,8 @@ save(my_oauth, file="./oauth_token.Rdata")
 ### New code to authenticate with twitteR now requires access token and access secret,
 ### which can be found in 'Keys and Access Tokens' tab in apps.twitter.com
 
-accessToken = 'zzz'
-accessSecret = 'xxx'
+accessToken = '31638712-UmbyoOQblBmCSvwr1S8Fsu0LsAg1fcDFI6lcVMbBS'
+accessSecret = 'Eh4QHzgIh5VAgtiD9nudhxrqnjg0MaBMMAxOHJWk86asL'
 
 library(twitteR)
 setup_twitter_oauth(consumer_key=consumerKey, consumer_secret=consumerSecret,
@@ -62,32 +62,6 @@ searchTwitter('trump', n=5)
 
 ## from a Windows machine:
 # searchTwitter("obama", cainfo = system.file("CurlSSL", "cacert.pem", package = "RCurl"))
-
-#####################################
-### COLLECTING USER INFORMATION   ###
-#####################################
-
-# profile information
-user <- getUser('realDonaldTrump')
-# from a Windows machine
-# user <- getUser('barackobama', cainfo = system.file("CurlSSL", "cacert.pem", package = "RCurl"))
-
-# For interesting analysis on Trump's tweets, see: http://varianceexplained.org/r/trump-tweets/
-
-user$toDataFrame()
-
-# followers
-user$getFollowers(n=10)
-# (10 most recent followers)
-
-# from a Windows machine
-# user$getFollowers(n=10, cainfo = system.file("CurlSSL", "cacert.pem", package = "RCurl"))
-
-# friends (who they follow)
-user$getFriends(n=43)
-
-# from a Windows machine
-# user$getFriends(n=43, cainfo = system.file("CurlSSL", "cacert.pem", package = "RCurl"))
 
 #####################################
 ### SEARCH RECENT TWEETS		  ###
@@ -155,6 +129,32 @@ streamgraph(data = sg_hash_df, key = "hashtag", value = "value", date = "hour",
 # from a Windows machine
 # tweets <- searchTwitter("#BuzzCity", cainfo = system.file("CurlSSL", "cacert.pem", package = "RCurl"))
 # tweets <- twListToDF(tweets)
+
+#####################################
+### COLLECTING USER INFORMATION   ###
+#####################################
+
+# profile information
+user <- getUser('realDonaldTrump')
+# from a Windows machine
+# user <- getUser('barackobama', cainfo = system.file("CurlSSL", "cacert.pem", package = "RCurl"))
+
+# For interesting analysis on Trump's tweets, see: http://varianceexplained.org/r/trump-tweets/
+
+user$toDataFrame()
+
+# followers
+user$getFollowers(n=10)
+# (10 most recent followers)
+
+# from a Windows machine
+# user$getFollowers(n=10, cainfo = system.file("CurlSSL", "cacert.pem", package = "RCurl"))
+
+# friends (who they follow)
+user$getFriends(n=43)
+
+# from a Windows machine
+# user$getFriends(n=43, cainfo = system.file("CurlSSL", "cacert.pem", package = "RCurl"))
 
 #############################################
 ### DOWNLOADING RECENT TWEETS FROM A USER ###
@@ -250,6 +250,9 @@ getCommonHashtags(tweets$text)
 
 ## What is the most retweeted tweet?
 top <- tweets[which.max(tweets$retweet_count),]
+
+
+### Optional Material (If Time)
 
 ############################################
 ### PULL FOLLOWER INFORMATION            ###
