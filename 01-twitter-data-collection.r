@@ -30,8 +30,8 @@ library(ROAuth)
 requestURL <- "https://api.twitter.com/oauth/request_token"
 accessURL <- "https://api.twitter.com/oauth/access_token"
 authURL <- "https://api.twitter.com/oauth/authorize"
-consumerKey <- "usbKthI1JZ4wlFNABSSS0eEbY"
-consumerSecret <- "8q5OCujj2BMReW8PL1aR3DuTYDXb05XlpnZGx8goX30ACfaYjm"
+consumerKey <- "xxx"
+consumerSecret <- "zzz"
 
 my_oauth <- OAuthFactory$new(consumerKey=consumerKey,
   consumerSecret=consumerSecret, requestURL=requestURL,
@@ -50,8 +50,8 @@ save(my_oauth, file="./oauth_token.Rdata")
 ### New code to authenticate with twitteR now requires access token and access secret,
 ### which can be found in 'Keys and Access Tokens' tab in apps.twitter.com
 
-accessToken = '31638712-UmbyoOQblBmCSvwr1S8Fsu0LsAg1fcDFI6lcVMbBS'
-accessSecret = 'Eh4QHzgIh5VAgtiD9nudhxrqnjg0MaBMMAxOHJWk86asL'
+accessToken = 'zzz'
+accessSecret = 'yyy'
 
 library(twitteR)
 setup_twitter_oauth(consumer_key=consumerKey, consumer_secret=consumerSecret,
@@ -69,6 +69,8 @@ searchTwitter('trump', n=5)
 
 # basic searches by keywords
 tweets <- searchTwitter("#beer", n=20)
+
+# view the function documentation using ?searchTwitter
 
 # convert to data frame
 tweets <- twListToDF(tweets)
@@ -250,7 +252,6 @@ getCommonHashtags(tweets$text)
 
 ## What is the most retweeted tweet?
 top <- tweets[which.max(tweets$retweet_count),]
-
 
 ### Optional Material (If Time)
 
