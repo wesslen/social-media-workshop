@@ -6,8 +6,10 @@
 ################################################################
 
 ## INSTALLING PACKAGES THAT WE WILL USE TODAY
-toInstall <- c("ROAuth", "twitteR", "streamR", "ggplot2", "stringr",
+toInstall <- c("ROAuth", "twitteR", "streamR", "ggplot2", "stringr","devtools",
 	"tm", "RCurl", "maps", "Rfacebook", "topicmodels", "devtools", "leaflet")
+
+devtools::install_github("hrbrmstr/streamgraph")
 
 # Uncomment to install the packages
 #lapply(toInstall, install.packages(toInstall), character.only = TRUE)
