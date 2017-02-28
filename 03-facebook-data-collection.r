@@ -20,7 +20,7 @@ library(Rfacebook)
 ## 2) Copy the long code ("Access Token") and paste it here below, substituting
 ## the fake one I wrote:
 
-fb_oauth = 'EAACEdEose0cBADIxuP6HTxQXXbGO3K9lQJNc0kik0udkYmvfBfS35E6DWHGS4ZB6VrfO04NpN7X5KSshKY3QsbmrhYZCNBnT7eAVRoJPE5yo3HqXTj0G7dVs8CKj5gckilatPifPK5gfg2uAoh9HC5W0DduQr8b5xDSlgSWmzA5AFM7uxEoP6KJGj01msZD'
+fb_oauth = 'xxx'
 
 ## Now try running the following line:
 getUsers("me", token=fb_oauth, private_info=TRUE)
@@ -48,6 +48,7 @@ page <- getPage("thecharlotteobserver", token=fb_oauth, n=500)
 # Which post got more likes?
 page[which.max(page$likes_count),]
 
+
 # Which post got more comments?
 page[which.max(page$comments_count),]
 
@@ -67,7 +68,11 @@ ProtPage <- getPage("thecharlotteobserver", token=fb_oauth, n=1000,
 # The following line downloads more information about the first post
 # (note that it uses the ID of the post as main option), as well
 # as a list of 1,000 people who "liked" it
-post <- getPost(page$id[183], token=fb_oauth, n.likes=1000, comments=FALSE)
+
+# let's save the post ID for the most liked post
+id <- page[which.max(page$likes_count),"id"]
+
+post <- getPost(id, token=fb_oauth, n.likes=1500, comments=FALSE)
 
 # This is how you can view that list of people:
 likes <- post$likes
@@ -89,7 +94,7 @@ head(sort(table(users$first_name), decreasing=TRUE), n=10)
 ##################################
 
 # How can I get the text of the comments on a specific post?
-post <- getPost(page$id[183], token=fb_oauth, n.comments=1000, likes=FALSE)
+post <- getPost(id, token=fb_oauth, n.comments=1000, likes=FALSE)
 
 # This is how you can view those comments:
 comments <- post$comments
